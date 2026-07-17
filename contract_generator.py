@@ -22,13 +22,13 @@ class ContractGenerator:
                          "Option_type", "Isin", "Field1", "Field2", "Field3"
                         ]
 
+
     def create_folder(self):
         try:
             folders = [
                 self.nse_folder_name,
                 self.bse_folder_name
             ]
-
             base_folder = os.path.join(self.base_path, self.folder_name)
             os.makedirs(base_folder, exist_ok=True)
 
@@ -38,7 +38,9 @@ class ContractGenerator:
         except Exception as e:
             print(f"exception occurred while creating folder: {e} !")
 
-    def fetch_nse_contracts(self):
+
+
+    def fetch_nse_contracts(self) -> pd.DataFrame | None:
         try:
             response = requests.get(self.contract_urls.get("nse_contract_fo_url"))
             print(f"url: {response.url} | Status Code: {response.status_code} !")
@@ -46,13 +48,15 @@ class ContractGenerator:
             nse_contract_df = df[df["Underlying"].isin(["NIFTY", "BANKNIFTY", "FINNIFTY"])]
             path = os.path.join(self.base_path, self.folder_name, self.nse_folder_name)
             nse_contract_df.to_csv(f"{path}/nse_contract_fo.csv", index=False)
+            return nse_contract_df
 
         except Exception as e:
             print(f"exception occurred while fetching nse contracts: {e} !")
+            return None
 
 
 
-    def fetch_bse_contracts(self):
+    def fetch_bse_contracts(self) -> pd.DataFrame | None:
         try:
             response = requests.get(self.contract_urls.get("bse_contract_fo_url"))
             print(f"url: {response.url} | Status Code: {response.status_code} !")
@@ -60,7 +64,8 @@ class ContractGenerator:
             bse_contract_df = df[df["Underlying"].isin(["SENSEX", "BANKEX"])]
             path = os.path.join(self.base_path, self.folder_name, self.bse_folder_name)
             bse_contract_df.to_csv(f"{path}/bse_contract_fo.csv", index=False)
+            return bse_contract_df
 
         except Exception as e:
             print(f"exception occurred while fetching bse contracts: {e} !")
-
+            return None
